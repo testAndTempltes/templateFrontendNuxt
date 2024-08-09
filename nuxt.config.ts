@@ -1,27 +1,35 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-	devtools: { enabled: true },
-	modules: [],
-	css: ["@/app/normalize.min.css","@/app/global.css"],
+  ssr: true,
 
-	imports: {
-		dirs: [
-			"shared/composables",
-			"shared/utils",
-			// You can specify here any folder from which you want to auto-import
-		],
-	},
+  devtools: { enabled: true },
+  modules: [],
 
-	dir: {
-		pages: "routes",
-	},
+  typescript: {
+    strict: true
+  },
 
-	components: {
-		dirs: [
-			{
-				path: "~/shared/components",
-				pathPrefix: false,
-			},
-		],
-	},
+  imports: {
+    autoImport: true,
+    dirs: [
+      'shared/composables',
+      'shared/utils'
+      // You can specify here any folder from which you want to auto-import
+    ]
+  },
+
+  dir: {
+    pages: 'routes'
+  },
+
+  components: {
+    dirs: [
+      {
+        path: '~/shared/components',
+        pathPrefix: false
+      }
+    ]
+  },
+
+  css: ['~/app/style/main.scss']
 })
