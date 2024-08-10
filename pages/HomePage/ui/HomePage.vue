@@ -2,24 +2,37 @@
   <div class="wrapper">
     <div class="container">
       <h1 class="title">
-        Hello from <a class="link" target="_blank" href="https://github.com/yunglocokid">@yunglocokid</a>
+        {{ $t('welcome') }}
       </h1>
-      <button class="button" @click="increment">Count is: {{ count }}</button>
+
+      <Button label="Submit" />
+
+      <Button class="button" @click="increment">Count is: {{ count }}</Button>
+      <Knob v-model="value5" :step="10" />
+      <Button @click="setLocale('en')">{{ $t('language.en') }}</Button>
+      <Button @click="setLocale('ru')">{{ $t('language.ru') }}</Button>
     </div>
   </div>
 </template>
 
+<script setup lang="ts">
+import Button from 'primevue/button'
+import Knob from 'primevue/knob'
+
+import { useI18n } from 'vue-i18n'
+import { ref } from 'vue'
+
+// eslint-disable-next-line no-undef
+const count = ref(1)
+
+const { setLocale } = useI18n()
+
+const increment = () => {
+  count.value += 1
+}
+</script>
+
 <style scoped lang="scss">
-body {
-  cursor: url('https://vsthemes.org/uploads/cursors/24897/ec9c27ec4afcbc9e321f3114ee514696.webp'), auto;
-}
-
-@keyframes cursor-blink {
-  0% {
-    opacity: 0;
-  }
-}
-
 .container {
   color: aliceblue;
   box-sizing: border-box;
@@ -38,40 +51,7 @@ body {
   color: #0b2349;
 }
 
-.link::after {
-  content: '';
-  width: 5px;
-  height: 25px;
-  background: #ec7fff;
-  display: inline-block;
-  animation: cursor-blink 1.5s steps(2) infinite;
-}
-
-.title a {
-  text-decoration: none;
-  color: blueviolet;
-}
-
 .wrapper {
   background: black;
-  font-family: 'Dubai Medium';
-}
-
-.button {
-  cursor: pointer;
-  color: aliceblue;
-  padding: 10px;
-  border: 5px solid transparent;
-  border-radius: 15px;
-  display: inline-block;
 }
 </style>
-
-<script setup lang="ts">
-// eslint-disable-next-line no-undef
-const count = ref(1)
-
-const increment = () => {
-  count.value += 1
-}
-</script>

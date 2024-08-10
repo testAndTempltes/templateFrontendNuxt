@@ -11,6 +11,7 @@
     "lint": "eslint . --ext .ts,.vue"
   },
   "devDependencies": {
+    "@nuxtjs/i18n": "^8.3.3",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.47.1",
     "eslint-plugin-nuxt": "^4.0.0",
@@ -24,8 +25,8 @@
   },
   "dependencies": {
     "nuxt": "^3.11.1",
+    "nuxt-primevue": "^3.0.0",
     "vue": "^3.4.21",
-    "vue-i18n": "^9.4.1",
     "vue-router": "^4.3.0"
   }
 }

@@ -1,16 +1,15 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   ssr: true,
 
   devtools: { enabled: true },
-  modules: [],
+  modules: ['@nuxtjs/i18n', 'nuxt-primevue'],
 
   typescript: {
     strict: true
   },
 
   imports: {
-    autoImport: true,
+    autoImport: false,
     dirs: [
       'shared/composables',
       'shared/utils'
@@ -31,5 +30,19 @@ export default defineNuxtConfig({
     ]
   },
 
-  css: ['~/app/style/main.scss']
+  css: ['~/app/style/main.scss'],
+
+  i18n: {
+    vueI18n: './app/i18n.config.ts'
+  }
+
+  // primevue: {
+  //   autoImport: false,
+  //
+  //   options: {
+  //     theme: {
+  //       preset: Aura
+  //     }
+  //   }
+  // }
 })
