@@ -8,9 +8,13 @@
       <Button label="Submit" />
 
       <Button class="button" @click="increment">Count is: {{ count }}</Button>
-      <Knob v-model="value5" :step="10" />
+      <!--      <Button class="button" @click="countStore">Count is: {{ getCounter }}</Button>-->
+
+      <Knob v-model="count" :step="10" />
       <Button @click="setLocale('en')">{{ $t('language.en') }}</Button>
       <Button @click="setLocale('ru')">{{ $t('language.ru') }}</Button>
+
+      {{ getCounter }}
     </div>
   </div>
 </template>
@@ -18,12 +22,16 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
 import Knob from 'primevue/knob'
-
 import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
+// import { useCounterStore } from '~/pages/HomePage/model/store'
+// import { storeToRefs } from 'pinia'
 
-// eslint-disable-next-line no-undef
 const count = ref(1)
+
+// const counterStore = useCounterStore()
+// const { countStore } = counterStore
+// const { getCounter } = storeToRefs(counterStore)
 
 const { setLocale } = useI18n()
 

@@ -2,7 +2,7 @@ export default defineNuxtConfig({
   ssr: true,
 
   devtools: { enabled: true },
-  modules: ['@nuxtjs/i18n', 'nuxt-primevue'],
+  modules: ['@nuxtjs/i18n', 'nuxt-primevue', '@pinia/nuxt', '@nuxt/test-utils/module'],
 
   typescript: {
     strict: true
@@ -29,20 +29,13 @@ export default defineNuxtConfig({
       }
     ]
   },
-
   css: ['~/app/style/main.scss'],
+
+  pinia: {
+    storesDirs: ['./app/stores/**']
+  },
 
   i18n: {
     vueI18n: './app/i18n.config.ts'
   }
-
-  // primevue: {
-  //   autoImport: false,
-  //
-  //   options: {
-  //     theme: {
-  //       preset: Aura
-  //     }
-  //   }
-  // }
 })
