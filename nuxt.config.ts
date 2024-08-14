@@ -1,8 +1,10 @@
+import Aura from '@primevue/themes/aura';
+
 export default defineNuxtConfig({
   ssr: true,
 
   devtools: { enabled: true },
-  modules: ['@nuxtjs/i18n', 'nuxt-primevue', '@pinia/nuxt', '@nuxt/test-utils/module'],
+  modules: ['@nuxtjs/i18n', '@primevue/nuxt-module', '@pinia/nuxt', '@nuxt/test-utils/module'],
 
   typescript: {
     strict: true
@@ -30,6 +32,14 @@ export default defineNuxtConfig({
     ]
   },
   css: ['~/app/style/main.scss'],
+
+  primevue: {
+    options: {
+      theme: {
+        preset: Aura,
+      }
+    }
+  },
 
   pinia: {
     storesDirs: ['./app/stores/**']
