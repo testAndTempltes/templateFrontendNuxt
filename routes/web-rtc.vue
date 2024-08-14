@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { HomePage } from '~/pages/HomePage'
+import { WebRTC } from '~/pages/TestPageRTC'
 </script>
 
 <template>
-  <HomePage />
+  <WebRTC />
 </template>
