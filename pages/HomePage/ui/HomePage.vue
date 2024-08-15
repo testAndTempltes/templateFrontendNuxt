@@ -13,8 +13,6 @@
       <Knob v-model="count" :step="10" />
       <Button @click="setLocale('en')">{{ $t('language.en') }}</Button>
       <Button @click="setLocale('ru')">{{ $t('language.ru') }}</Button>
-
-      {{ getCounter }}
     </div>
   </div>
 </template>

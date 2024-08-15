@@ -1,10 +1,15 @@
-import Aura from '@primevue/themes/aura';
+import Aura from '@primevue/themes/aura'
 
 export default defineNuxtConfig({
   ssr: true,
 
   devtools: { enabled: true },
-  modules: ['@nuxtjs/i18n', '@primevue/nuxt-module', '@pinia/nuxt', '@nuxt/test-utils/module'],
+  modules: [
+    '@nuxtjs/i18n',
+    '@primevue/nuxt-module',
+    '@pinia/nuxt',
+    '@nuxt/test-utils/module'
+  ],
 
   typescript: {
     strict: true
@@ -36,7 +41,7 @@ export default defineNuxtConfig({
   primevue: {
     options: {
       theme: {
-        preset: Aura,
+        preset: Aura
       }
     }
   },
