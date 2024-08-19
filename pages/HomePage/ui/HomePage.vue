@@ -22,14 +22,15 @@ import Button from 'primevue/button'
 import Knob from 'primevue/knob'
 import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
-// import { useCounterStore } from '~/pages/HomePage/model/store'
-// import { storeToRefs } from 'pinia'
+import { useCounterStore } from '~/pages/HomePage/model/store'
+import { storeToRefs } from 'pinia'
+import { definePageMeta } from '#imports'
 
 const count = ref(1)
 
-// const counterStore = useCounterStore()
-// const { countStore } = counterStore
-// const { getCounter } = storeToRefs(counterStore)
+const counterStore = useCounterStore()
+const { countStore } = counterStore
+const { getCounter } = storeToRefs(counterStore)
 
 const { setLocale } = useI18n()
 
