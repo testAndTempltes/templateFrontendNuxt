@@ -1,106 +1,99 @@
 <template>
   <div>
+    <h1>WebRTC Video Call</h1>
     <video ref="localVideo" autoplay muted></video>
     <video ref="remoteVideo" autoplay></video>
-    <input v-model="roomId" placeholder="Room ID" />
-    <button @click="joinRoom">Join Room</button>
-    <button @click="createRoom">Create Room</button>
-    <button @click="endCall">End Call</button>
+    <button @click="startCall">Start Call</button>
   </div>
 </template>
 
-<script lang="js">
-export default {
-  data() {
-    return {
-      localStream: null,
-      remoteStream: null,
-      peerConnection: null,
-      roomId: '',
-      signalingSocket: null
-    }
-  },
-  methods: {
-    async joinRoom() {
-      this.signalingSocket = new WebSocket('ws://localhost:8080') // Укажите ваш WebSocket сервер
-      this.signalingSocket.onmessage = this.handleSignalMessage
+<script setup>
+import { ref } from 'vue'
+import { io } from 'socket.io-client'
 
-      this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      this.$refs.localVideo.srcObject = this.localStream
+const localVideo = ref(null)
+const remoteVideo = ref(null)
+const socket = io({
+  path: 'api/socket.io'
+})
+let localStream
+let peerConnection
 
-      this.createPeerConnection()
-    },
+const startCall = async () => {
+  localStream = await navigator.mediaDevices.getUserMedia({
+    video: true,
+    audio: true
+  })
+  localVideo.value.srcObject = localStream
 
-    async createRoom() {
-      this.signalingSocket = new WebSocket('ws://localhost:8080') // Укажите ваш WebSocket сервер
-      this.signalingSocket.onmessage = this.handleSignalMessage
+  peerConnection = new RTCPeerConnection()
 
-      this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      this.$refs.localVideo.srcObject = this.localStream
-
-      this.createPeerConnection()
-      this.peerConnection.createOffer().then(offer => {
-        return this.peerConnection.setLocalDescription(offer)
-      }).then(() => {
-        this.signalingSocket.send(JSON.stringify({
-          type: 'offer',
-          sdp: this.peerConnection.localDescription,
-          roomId: this.roomId
-        }))
+  peerConnection.onicecandidate = (event) => {
+    if (event.candidate) {
+      socket.emit('candidate', {
+        target: 'remote-peer-id',
+        candidate: event.candidate
       })
-    },
-
-    handleSignalMessage(message) {
-      const data = JSON.parse(message.data)
-      if (data.roomId !== this.roomId) return
-
-      if (data.type === 'offer') {
-        this.peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
-        this.peerConnection.createAnswer().then(answer => {
-          return this.peerConnection.setLocalDescription(answer)
-        }).then(() => {
-          this.signalingSocket.send(JSON.stringify({
-            type: 'answer',
-            sdp: this.peerConnection.localDescription,
-            roomId: this.roomId
-          }))
-        })
-      } else if (data.type === 'answer') {
-        this.peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
-      } else if (data.candidate) {
-        this.peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate))
-      }
-    },
-
-    createPeerConnection() {
-      this.peerConnection = new RTCPeerConnection()
-
-      this.localStream.getTracks().forEach(track => {
-        this.peerConnection.addTrack(track, this.localStream)
-      })
-
-      this.peerConnection.onicecandidate = event => {
-        if (event.candidate) {
-          this.signalingSocket.send(JSON.stringify({
-            candidate: event.candidate,
-            roomId: this.roomId
-          }))
-        }
-      }
-
-      this.peerConnection.ontrack = event => {
-        this.remoteStream = event.streams[0]
-        this.$refs.remoteVideo.srcObject = this.remoteStream
-      }
-    },
-
-    endCall() {
-      this.peerConnection.close()
-      this.signalingSocket.close()
-      this.localStream.getTracks().forEach(track => track.stop())
     }
   }
+
+  peerConnection.ontrack = (event) => {
+    remoteVideo.value.srcObject = event.streams[0]
+  }
+
+  localStream.getTracks().forEach((track) => {
+    peerConnection.addTrack(track, localStream)
+  })
+
+  const offer = await peerConnection.createOffer()
+  await peerConnection.setLocalDescription(offer)
+
+  socket.emit('offer', { target: 'remote-peer-id', offer: offer })
 }
+
+socket.on('offer', async (data) => {
+  if (!peerConnection) {
+    peerConnection = new RTCPeerConnection()
+    localStream.getTracks().forEach((track) => {
+      peerConnection.addTrack(track, localStream)
+    })
+
+    peerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        socket.emit('candidate', {
+          target: data.from,
+          candidate: event.candidate
+        })
+      }
+    }
+
+    peerConnection.ontrack = (event) => {
+      remoteVideo.value.srcObject = event.streams[0]
+    }
+  }
+
+  await peerConnection.setRemoteDescription(
+    new RTCSessionDescription(data.offer)
+  )
+  const answer = await peerConnection.createAnswer()
+  await peerConnection.setLocalDescription(answer)
+
+  socket.emit('answer', { target: data.from, answer: answer })
+})
+
+socket.on('answer', (data) => {
+  peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer))
+})
+
+socket.on('candidate', (data) => {
+  peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate))
+})
 </script>
 
-<style scoped lang="scss"></style>
+<style>
+video {
+  width: 300px;
+  height: 300px;
+  margin: 10px;
+}
+</style>

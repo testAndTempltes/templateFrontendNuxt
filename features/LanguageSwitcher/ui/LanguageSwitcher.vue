@@ -47,7 +47,11 @@ const selectedCountry = computed<object>(() => {
   return countries.value[selectedCountryIndex.value]
 })
 
-const countries = computed<Array<object>>(() => [
+type ICountry = {
+  lang: string
+}
+
+const countries = computed<Array<ICountry>>(() => [
   {
     name: t('language.en'),
     code: 'gb',
@@ -60,11 +64,19 @@ const countries = computed<Array<object>>(() => [
   }
 ])
 
-const changeLanguage = (event: {value: { lang: string}}): void => {
+type LanguageEvent = {
+  value: {
+    lang: string
+  }
+}
+
+function changeLanguage(event: LanguageEvent): void {
   setLocale(event.value?.lang)
-  selectedCountryIndex.value = countries.value.findIndex((subItem): boolean => {
-    return event.value.lang === subItem.lang
-  })
+  selectedCountryIndex.value = countries.value.findIndex(
+    (subItem: ICountry): boolean => {
+      return event.value.lang === subItem.lang
+    }
+  )
 }
 </script>
 

@@ -3,8 +3,7 @@
     <template #item="{ item, props }">
       <NuxtLink v-if="item" v-slot="{ href, navigate }" :to="item.route" custom>
         <a v-ripple :href="href" v-bind="props.action" @click="navigate">
-          <span :class="item.icon" />
-          <span class="ml-2">{{ item.label }}</span>
+          <span>{{ item.label }}</span>
         </a>
       </NuxtLink>
     </template>
@@ -20,17 +19,17 @@ import { LanguageSwitcher } from '~/features/LanguageSwitcher'
 
 const router = useRouter()
 
-const prepareRoutes = (): Array<Object> => {
+const prepareRoutes = (): Array<object> => {
   return router.options.routes.map((route) => {
     return {
       label: route.name,
-      route: route.path
+      route: route.path,
+      disabled: false
     }
   })
 }
 
 const myRoutes = prepareRoutes()
-
 </script>
 
 <style scoped lang="scss"></style>
