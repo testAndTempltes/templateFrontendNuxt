@@ -36,7 +36,11 @@ export default defineNuxtConfig({
       }
     ]
   },
-  css: ['~/app/style/main.scss'],
+  css: [
+    '~/app/style/main.scss',
+    'primeicons/primeicons.css',
+    'primeflex/primeflex.css'
+  ],
 
   primevue: {
     options: {
