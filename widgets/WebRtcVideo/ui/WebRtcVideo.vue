@@ -7,17 +7,18 @@
   </div>
 </template>
 
-<script setup lang="js">
+<script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { io } from 'socket.io-client'
+import { io, Socket } from 'socket.io-client'
 
-const localVideo = ref(null)
-const remoteVideo = ref(null)
+const localVideo = ref<HTMLVideoElement | null>(null)
+const remoteVideo = ref<HTMLVideoElement | null>(null)
 
-const socket = io('http://localhost:3001/')
-let localStream
-let peerConnection
-let room = 'some-room-id' // Уникальный идентификатор комнаты
+const socket: Socket = io('http://localhost:3001/')
+let localStream: MediaStream | null = null
+let peerConnection: RTCPeerConnection | null = null
+let remoteUserId: string | null = null
+const room = 'some-room-id' // Unique room identifier
 
 const startCall = async () => {
   socket.emit('join', room)
@@ -26,12 +27,15 @@ const startCall = async () => {
     video: true,
     audio: true
   })
-  localVideo.value.srcObject = localStream
+
+  if (localVideo.value && localStream) {
+    localVideo.value.srcObject = localStream
+  }
 
   peerConnection = new RTCPeerConnection()
 
-  peerConnection.onicecandidate = (event) => {
-    if (event.candidate) {
+  peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
+    if (event.candidate && remoteUserId) {
       socket.emit('candidate', {
         target: remoteUserId,
         candidate: event.candidate
@@ -39,42 +43,49 @@ const startCall = async () => {
     }
   }
 
-  peerConnection.ontrack = (event) => {
-    remoteVideo.value.srcObject = event.streams[0]
+  peerConnection.ontrack = (event: RTCTrackEvent) => {
+    if (remoteVideo.value) {
+      remoteVideo.value.srcObject = event.streams[0]
+    }
   }
 
-  localStream.getTracks().forEach((track) => {
-    peerConnection.addTrack(track, localStream)
-  })
+  if (localStream) {
+    localStream.getTracks().forEach((track) => {
+      peerConnection?.addTrack(track, localStream!)
+    })
+  }
 
   const offer = await peerConnection.createOffer()
   await peerConnection.setLocalDescription(offer)
 
-  socket.emit('offer', { target: remoteUserId, offer: offer })
+  if (remoteUserId) {
+    socket.emit('offer', { target: remoteUserId, offer: offer })
+  }
 }
-
-let remoteUserId
 
 onMounted(() => {
   socket.on('connect', () => {
     console.log('Connected to WebSocket server')
   })
 
-  socket.on('other-users', (userId) => {
+  socket.on('other-users', (userId: string) => {
     console.log(userId)
     remoteUserId = userId
   })
 
-  socket.on('offer', async (data) => {
+  socket.on('offer', async (data: { from: string; offer: never }) => {
     console.log('Offer received:', data)
+
     if (!peerConnection) {
       peerConnection = new RTCPeerConnection()
 
-      localStream.getTracks().forEach((track) => {
-        peerConnection.addTrack(track, localStream)
-      })
+      if (localStream) {
+        localStream.getTracks().forEach((track) => {
+          peerConnection?.addTrack(track, localStream!)
+        })
+      }
 
-      peerConnection.onicecandidate = (event) => {
+      peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
         if (event.candidate) {
           socket.emit('candidate', {
             target: data.from,
@@ -83,8 +94,10 @@ onMounted(() => {
         }
       }
 
-      peerConnection.ontrack = (event) => {
-        remoteVideo.value.srcObject = event.streams[0]
+      peerConnection.ontrack = (event: RTCTrackEvent) => {
+        if (remoteVideo.value) {
+          remoteVideo.value.srcObject = event.streams[0]
+        }
       }
     }
 
@@ -97,14 +110,14 @@ onMounted(() => {
     socket.emit('answer', { target: data.from, answer: answer })
   })
 
-  socket.on('answer', (data) => {
+  socket.on('answer', (data: { answer: never }) => {
     console.log('Answer received:', data)
-    peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer))
+    peerConnection?.setRemoteDescription(new RTCSessionDescription(data.answer))
   })
 
-  socket.on('candidate', (data) => {
+  socket.on('candidate', (data: { candidate: never }) => {
     console.log('Candidate received:', data)
-    peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate))
+    peerConnection?.addIceCandidate(new RTCIceCandidate(data.candidate))
   })
 })
 </script>

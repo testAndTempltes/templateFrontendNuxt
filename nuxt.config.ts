@@ -8,7 +8,8 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@primevue/nuxt-module',
     '@pinia/nuxt',
-    '@nuxt/test-utils/module'
+    '@nuxt/test-utils/module',
+    '@nuxtjs/storybook'
   ],
 
   typescript: {
@@ -56,5 +57,9 @@ export default defineNuxtConfig({
 
   i18n: {
     vueI18n: './app/i18n.config.ts'
+  },
+
+  storybook: {
+    port: 6006
   }
 })
