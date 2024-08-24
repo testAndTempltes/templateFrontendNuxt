@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@primevue/nuxt-module',
     '@pinia/nuxt',
+    '@nuxtjs/color-mode',
     '@nuxt/test-utils/module',
     '@nuxtjs/storybook'
   ],
@@ -37,6 +38,7 @@ export default defineNuxtConfig({
       }
     ]
   },
+
   css: [
     '~/app/style/main.scss',
     'primeicons/primeicons.css',
@@ -46,7 +48,12 @@ export default defineNuxtConfig({
   primevue: {
     options: {
       theme: {
-        preset: Aura
+        preset: Aura,
+        options: {
+          prefix: 'p',
+          darkModeSelector: 'system',
+          cssLayer: false
+        }
       }
     }
   },
@@ -56,10 +63,21 @@ export default defineNuxtConfig({
   },
 
   i18n: {
-    vueI18n: './app/i18n.config.ts'
+    vueI18n: './shared/i18n/i18n.config.ts'
   },
 
   storybook: {
     port: 6006
+  },
+
+  colorMode: {
+    preference: 'system', // default value of $colorMode.preference
+    fallback: 'light', // fallback value if not system preference found
+    hid: 'nuxt-color-mode-script',
+    globalName: '__NUXT_COLOR_MODE__',
+    componentName: 'ColorScheme',
+    classPrefix: '',
+    classSuffix: '-mode',
+    storageKey: 'nuxt-color-mode'
   }
 })

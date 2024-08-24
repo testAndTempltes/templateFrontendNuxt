@@ -1,3 +1,13 @@
 @import 'normalize';
 @import 'mixins';
 @import 'variables';
+
+
+body {
+  background-color: $color-bg;
+  color: $color;
+  transition: background-color $transition-base-time;
+}
+a {
+  color: $color-primary
+}

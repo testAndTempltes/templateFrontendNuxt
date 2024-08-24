@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/vue3'
 
-import LanguageSwitcher from '../LanguageSwitcher.vue'
+import ThemeChanger from '../ThemeChanger.vue'
 
 const meta = {
-  title: 'Features/LanguageSwitcher',
-  component: LanguageSwitcher,
+  title: 'Features/ThemeChanger',
+  component: ThemeChanger,
   tags: ['autodocs'],
   argTypes: {},
   args: {} // default value
-} satisfies Meta<typeof LanguageSwitcher>
+} satisfies Meta<typeof ThemeChanger>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -20,10 +20,10 @@ export const SimpleComponent: Story = {
 export const CustomTemplate: Story = {
   args: {},
   render: (args) => ({
-    components: { LanguageSwitcher },
+    components: { ThemeChanger },
     setup() {
       return { args }
     },
-    template: '<LanguageSwitcher />'
+    template: '<ThemeChanger />'
   })
 }
